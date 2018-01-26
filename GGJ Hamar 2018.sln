@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GGJ Hamar 2018", "GGJ Hamar 2018.vcxproj", "{685E67FD-1832-4A89-910A-8D50E280A2C4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gl3w", "gl3w\gl3w.vcxproj", "{49F57CF0-09B2-4B9B-A935-A12A85F16656}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{685E67FD-1832-4A89-910A-8D50E280A2C4}.Release|x64.Build.0 = Release|x64
 		{685E67FD-1832-4A89-910A-8D50E280A2C4}.Release|x86.ActiveCfg = Release|Win32
 		{685E67FD-1832-4A89-910A-8D50E280A2C4}.Release|x86.Build.0 = Release|Win32
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Debug|x64.ActiveCfg = Debug|x64
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Debug|x64.Build.0 = Debug|x64
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Debug|x86.ActiveCfg = Debug|Win32
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Debug|x86.Build.0 = Debug|Win32
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Release|x64.ActiveCfg = Release|x64
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Release|x64.Build.0 = Release|x64
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Release|x86.ActiveCfg = Release|Win32
+		{49F57CF0-09B2-4B9B-A935-A12A85F16656}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
