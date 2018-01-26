@@ -1,5 +1,5 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef GGJ_2018_WINDOW_H
+#define GGJ_2018_WINDOW_H
 #pragma once
 
 namespace GGJ
@@ -20,7 +20,7 @@ namespace GGJ
         Window(Window &&)      = delete;
 
     private:
-        Window() {};
+        Window() noexcept {};
 
         int width;
         int height;
