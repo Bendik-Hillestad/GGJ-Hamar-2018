@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Window_win32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="gl3w\gl3w.vcxproj">
