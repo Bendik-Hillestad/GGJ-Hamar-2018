@@ -20,6 +20,8 @@ namespace GGJ
     private:
         Game(char const* workingDirectory) noexcept : workingDirectory{ workingDirectory } {};
 
+        void Think(float dt) noexcept;
+
         Window* gameWindow = nullptr;
 
         char const* const workingDirectory;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <memory>
 
 #include <GL\gl3w.h>
@@ -145,6 +146,14 @@ namespace GGJ
         wglSwapIntervalEXT = reinterpret_cast<decltype(wglSwapIntervalEXT)>(wglGetProcAddress("wglSwapIntervalEXT"));
         if (wglSwapIntervalEXT == nullptr)                               return false;
 
+        //Enable/Disable V-Sync (1 is off, 0 is on)
+        wglSwapIntervalEXT(1);
+
+        //Bind a VAO
+        GLuint vao;
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
         //Get viewport
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
@@ -152,6 +161,18 @@ namespace GGJ
         //Store the viewport size
         this->width  = viewport[2];
         this->height = viewport[3];
+
+        //Set clear color
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        //Set blending mode
+        glEnable   (GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        //Disable stuff we don't want
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DITHER);
 
         //Return success
         return true;
@@ -188,11 +209,23 @@ namespace GGJ
         SetFocus           (this->data->hWnd);
     }
 
+    void Window::Present() noexcept
+    {
+        //Present our buffer to the screen
+        wglSwapLayerBuffers(this->data->hDC, WGL_SWAP_MAIN_PLANE);
+
+        //Synchronise with GPU
+        glFinish();
+    }
+
     void Window::Destroy() noexcept
     {
         //Release the window
         if (this->data->hWnd)
         {
+            wglMakeCurrent(this->data->hDC, nullptr);
+            wglDeleteContext(this->data->hGlrc);
+            ReleaseDC(this->data->hWnd, this->data->hDC);
             DestroyWindow(this->data->hWnd);
         }
 
@@ -209,10 +242,23 @@ namespace GGJ
 
     static LRESULT CALLBACK MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        //TODO: Input handling goes here
+        //Process message
+	    switch (uMsg)
+	    {
+		//Check if key has been pressed
+	    case WM_KEYDOWN:
+            std::printf("Key pressed! %d\n", (int)wParam);//InputManager::GetInputManager()->SetState((unsigned int)wParam, true);
+		    return 0;
 
-        //Send other messages to the default message handler
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		//Check if key has been released
+	    case WM_KEYUP:
+            std::printf("Key released! %d\n", (int)wParam);//InputManager::GetInputManager()->SetState((unsigned int)wParam, false);
+		    return 0;
+
+		//Send other messages to the default message handler
+	    default:
+		    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	    }
     }
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
