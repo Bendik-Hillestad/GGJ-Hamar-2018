@@ -6,4 +6,4 @@ Something like that.
 
 Will be made from scratch, using the Win32 API, OpenGL, C++ and pizza.
 
-BRB BUYING FOOD
+BRB EATING FOOD
