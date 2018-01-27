@@ -1,5 +1,9 @@
+#include <GL\gl3w.h>
+
 #include "Game.h"
 #include "Window.h"
+#include "Shaders.h"
+#include "BoxMesh.h"
 
 #include <cstdio>
 #include <chrono>
@@ -25,6 +29,12 @@ namespace GGJ
 
         //Initialise OpenGL
         game.gameWindow->InitGL();
+
+        //Build shaders
+        BuildShaders();
+
+        //Make sure the box mesh has been built
+        BoxMesh::GetBoxMesh();
 
         //Show the window
         game.gameWindow->Show();
@@ -60,7 +70,8 @@ namespace GGJ
                 acc -= ENGINE_TICK.count();
             }
 
-            //TODO: Render the frame
+            //Render the frame
+            this->Render();
 
             //Present the frame
             this->gameWindow->Present();
@@ -78,5 +89,29 @@ namespace GGJ
     {
         //TODO: Update the game state
         std::printf("Hello\n");
+    }
+
+    void Game::Render() noexcept
+    {
+        //Clear buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //Use the shader we want
+        GLuint program = UseProgram(GGJ::Program::Main);
+
+        //Bind the box mesh
+        BoxMesh::GetBoxMesh()->Bind(program);
+
+        //Set the scale
+        GLuint uniformScale = glGetUniformLocation(program, "scale");
+        glUniform2f
+        (
+            uniformScale,
+            64.0f / this->gameWindow->GetWidth (),
+            64.0f / this->gameWindow->GetHeight()
+        );
+
+        //Draw a quad
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 };

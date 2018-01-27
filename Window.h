@@ -11,11 +11,14 @@ namespace GGJ
     public:
         static Window* InitWindow(int width, int height) noexcept;
 
-        bool InitGL () noexcept;
-        bool Poll   () noexcept;
-        void Show   () noexcept;
-        void Present() noexcept;
-        void Destroy() noexcept;
+        int GetWidth () const noexcept;
+        int GetHeight() const noexcept;
+
+        bool InitGL  () noexcept;
+        bool Poll    () noexcept;
+        void Show    () noexcept;
+        void Present () noexcept;
+        void Destroy () noexcept;
 
         Window(Window const &) = delete;
         Window(Window &&)      = delete;
