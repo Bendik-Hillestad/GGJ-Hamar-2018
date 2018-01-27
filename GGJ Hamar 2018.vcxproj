@@ -120,6 +120,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="InputManager_win32.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quad.cpp" />
@@ -138,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="Flick.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Quad.h" />
