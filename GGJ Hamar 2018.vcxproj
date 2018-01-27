@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{685E67FD-1832-4A89-910A-8D50E280A2C4}</ProjectGuid>
     <RootNamespace>GGJHamar2018</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -123,6 +123,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Timeline.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Window_win32.cpp" />
   </ItemGroup>
@@ -132,9 +133,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Flick.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="Timeline.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

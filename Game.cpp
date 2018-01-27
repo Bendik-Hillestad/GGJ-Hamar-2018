@@ -4,16 +4,13 @@
 #include "Window.h"
 #include "Shaders.h"
 #include "Quad.h"
+#include "Flick.h"
 
 #include <cstdio>
-#include <chrono>
-#include <ratio>
+
 
 namespace GGJ
 {
-    using flick_t = std::chrono::duration<std::chrono::nanoseconds::rep, std::ratio<1, 705600000>>;
-    using clock_t = std::chrono::high_resolution_clock;
-
     //The length of an engine tick
     static constexpr flick_t ENGINE_TICK
     {
