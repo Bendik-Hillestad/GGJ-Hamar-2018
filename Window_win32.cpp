@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "InputManager.h"
 
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -26,6 +27,13 @@ namespace GGJ
         HWND      hWnd;
         HDC       hDC;
         HGLRC     hGlrc;
+    };
+
+    struct input_event_t
+    {
+        WPARAM wParam;
+        LPARAM lParam;
+        bool   keyDown;
     };
 
     Window* Window::InitWindow(int width, int height) noexcept
@@ -245,20 +253,25 @@ namespace GGJ
         //Process message
 	    switch (uMsg)
 	    {
-		//Check if key has been pressed
-	    case WM_KEYDOWN:
-            std::printf("Key pressed! %d\n", (int)wParam);//InputManager::GetInputManager()->SetState((unsigned int)wParam, true);
-		    return 0;
+		    //Check if key has been pressed
+	        case WM_KEYDOWN:
+            {
+                input_event_t inputEvent{ wParam, lParam, true };
+                InputManager::GetInputManager()->PushEvent(&inputEvent);
+            } break;
+            
+		    //Check if key has been released
+	        case WM_KEYUP:
+            {
+                input_event_t inputEvent{ wParam, lParam, false };
+                InputManager::GetInputManager()->PushEvent(&inputEvent);
+            } break;
 
-		//Check if key has been released
-	    case WM_KEYUP:
-            std::printf("Key released! %d\n", (int)wParam);//InputManager::GetInputManager()->SetState((unsigned int)wParam, false);
-		    return 0;
-
-		//Send other messages to the default message handler
-	    default:
-		    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		    //Send other messages to the default message handler
+            default: { return DefWindowProc(hWnd, uMsg, wParam, lParam); }
 	    }
+
+        return 0;
     }
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

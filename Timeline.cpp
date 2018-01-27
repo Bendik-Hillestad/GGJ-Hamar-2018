@@ -10,7 +10,11 @@ namespace GGJ
 
     void Timeline::AddKeystroke(flick_t timestamp, keystroke_t keystroke) noexcept
     {
+        //Push timestamp
+        this->timestamps.push_back(timestamp);
 
+        //Push keystroke
+        this->keystrokes.push_back(keystroke);
     }
 
     void Timeline::EraseAfter(flick_t timestamp) noexcept
@@ -20,6 +24,6 @@ namespace GGJ
 
     Timeline::iterator Timeline::GetKeystrokesInRange(flick_t begin, flick_t end) noexcept
     {
-
+        return this->keystrokes.begin();
     }
 };

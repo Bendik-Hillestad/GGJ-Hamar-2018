@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InputManager_win32.cpp" />
     <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Shaders.cpp" />
@@ -134,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flick.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Shaders.h" />

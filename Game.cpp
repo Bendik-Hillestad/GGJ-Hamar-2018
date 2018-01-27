@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "Window.h"
+#include "InputManager.h"
 #include "Shaders.h"
 #include "Quad.h"
 #include "Flick.h"
@@ -49,6 +50,21 @@ namespace GGJ
         //Enter the main game loop
         do
         {
+            Key key;
+            while ((key = InputManager::GetInputManager()->Poll()) != Key::NONE)
+            {
+                if ((key & ~0b11) == W) std::printf("W\n");
+                if ((key & ~0b11) == A) std::printf("A\n");
+                if ((key & ~0b11) == S) std::printf("S\n");
+                if ((key & ~0b11) == D) std::printf("D\n");
+
+                if ((key & ~0b11) == One) std::printf("One\n");
+                if ((key & ~0b11) == Two) std::printf("Two\n");
+                if ((key & ~0b11) == Three) std::printf("Three\n");
+
+                if ((key & ~0b11) == Z) std::printf("Z\n");
+            }
+
             //Grab elapsed time
             auto now = clock_t::now();
             auto dur = now - old;
@@ -85,7 +101,7 @@ namespace GGJ
     void Game::Think(float dt) noexcept
     {
         //TODO: Update the game state
-        std::printf("Hello\n");
+        //std::printf("Hello\n");
     }
 
     void Game::Render() noexcept
