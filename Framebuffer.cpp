@@ -30,6 +30,18 @@ namespace GGJ
         //Unbind the texture
         glBindTexture(GL_TEXTURE_2D, 0);
 
+        //Create the fbo
+        glGenFramebuffers(1, &buffer.fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, buffer.fbo);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, buffer.texture, 0);
+
+        //Tell OpenGL where to draw
+        GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, DrawBuffers);
+
+        //Unbind framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         //Save the width and height
         buffer.width  =  width;
         buffer.height = height;

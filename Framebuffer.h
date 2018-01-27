@@ -21,6 +21,7 @@ namespace GGJ
         Framebuffer() noexcept;
 
         GLuint texture;
+        GLuint fbo;
         GLuint width;
         GLuint height;
     };
