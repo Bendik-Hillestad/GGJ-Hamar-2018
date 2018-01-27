@@ -36,7 +36,7 @@ namespace GGJ
         bool   keyDown;
     };
 
-    Window* Window::InitWindow(int width, int height) noexcept
+    Window* Window::GetWindow(int width, int height) noexcept
     {
         static Window window{};
 

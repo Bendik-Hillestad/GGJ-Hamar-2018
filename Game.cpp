@@ -5,6 +5,7 @@
 #include "InputManager.h"
 #include "Shaders.h"
 #include "Quad.h"
+#include "Player.h"
 #include "Flick.h"
 
 #include <cstdio>
@@ -18,12 +19,14 @@ namespace GGJ
         std::chrono::duration_cast<flick_t>(std::chrono::duration<flick_t::rep, std::ratio<1, 60>>{1})
     };
 
+    static Player playerBlock{ 0, 0, 32, 64, 1 };
+
     Game* Game::InitGame(char const* workingDirectory) noexcept
     {
         static Game game{ workingDirectory };
 
         //Create the window
-        game.gameWindow = Window::InitWindow(800, 600);
+        game.gameWindow = Window::GetWindow(800, 600);
 
         //Initialise OpenGL
         game.gameWindow->InitGL();
@@ -50,21 +53,6 @@ namespace GGJ
         //Enter the main game loop
         do
         {
-            Key key;
-            while ((key = InputManager::GetInputManager()->Poll()) != Key::NONE)
-            {
-                if ((key & ~0b11) == W) std::printf("W\n");
-                if ((key & ~0b11) == A) std::printf("A\n");
-                if ((key & ~0b11) == S) std::printf("S\n");
-                if ((key & ~0b11) == D) std::printf("D\n");
-
-                if ((key & ~0b11) == One) std::printf("One\n");
-                if ((key & ~0b11) == Two) std::printf("Two\n");
-                if ((key & ~0b11) == Three) std::printf("Three\n");
-
-                if ((key & ~0b11) == Z) std::printf("Z\n");
-            }
-
             //Grab elapsed time
             auto now = clock_t::now();
             auto dur = now - old;
@@ -100,8 +88,16 @@ namespace GGJ
 
     void Game::Think(float dt) noexcept
     {
-        //TODO: Update the game state
-        //std::printf("Hello\n");
+        //Grab key inputs
+        Key key;
+        while ((key = InputManager::GetInputManager()->Poll()) != Key::NONE)
+        {
+            //Send to the player
+            playerBlock.HandleKeyEvent(key);
+        }
+
+        //Update player
+        playerBlock.Update(dt);
     }
 
     void Game::Render() noexcept
@@ -115,16 +111,7 @@ namespace GGJ
         //Bind the box mesh
         Quad::GetQuad()->Bind(program);
 
-        //Set the scale
-        GLuint uniformScale = glGetUniformLocation(program, "scale");
-        glUniform2f
-        (
-            uniformScale,
-            64.0f / this->gameWindow->GetWidth (),
-            64.0f / this->gameWindow->GetHeight()
-        );
-
-        //Draw a quad
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //Render the player
+        playerBlock.Render(program);
     }
 };

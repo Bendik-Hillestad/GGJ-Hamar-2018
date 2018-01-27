@@ -9,9 +9,9 @@ namespace GGJ
                 #version 330 core
 
                 layout(location = 0) in vec2 vertexPosition;
-                /*layout(location = 1) in vec2 instancePosition;*/
 
                 uniform vec2 scale;
+                uniform vec2 pos;
 
                 out vec2 texCoord;
 
@@ -19,7 +19,7 @@ namespace GGJ
                 {
 	                texCoord = 0.5 + vertexPosition * vec2(0.5, -0.5);
 
-	                gl_Position	= vec4((vertexPosition * scale)/* + instancePosition*/, 0, 1);
+	                gl_Position	= vec4((vertexPosition * scale) + pos, 0, 1);
                 }
             )glsl"
         },
@@ -36,9 +36,7 @@ namespace GGJ
 
                 void main()
                 {
-	                float f = (0.5 - length(texCoord - vec2(0.5, 0.5))) * 2.0;
-
-	                gl_FragColor = vec4(1, 1, 1, f);
+	                gl_FragColor = vec4(1, 1, 1, 1);
                 }
             )glsl"
         },

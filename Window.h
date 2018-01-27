@@ -9,7 +9,7 @@ namespace GGJ
     class Window final
     {
     public:
-        static Window* InitWindow(int width, int height) noexcept;
+        static Window* GetWindow(int width = 0, int height = 0) noexcept;
 
         int GetWidth () const noexcept;
         int GetHeight() const noexcept;
