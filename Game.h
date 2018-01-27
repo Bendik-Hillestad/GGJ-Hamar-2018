@@ -2,6 +2,8 @@
 #define GGJ_2018_GAME_H
 #pragma once
 
+#include "Flick.h"
+
 namespace GGJ
 {
     class Window;
@@ -9,10 +11,12 @@ namespace GGJ
     class Game final
     {
     public:
-        static Game* InitGame(char const* workingDirectory) noexcept;
+        static Game* GetGame(char const* workingDirectory = nullptr) noexcept;
 
-        void Run    () noexcept;
-        void Cleanup() noexcept;
+        flick_t GetWorldTime() const noexcept;
+
+        void Run            () noexcept;
+        void Cleanup        () noexcept;
 
         Game(Game const &) = delete;
         Game(Game &&)      = delete;
@@ -23,7 +27,8 @@ namespace GGJ
         void Think (float dt) noexcept;
         void Render()         noexcept;
 
-        Window* gameWindow = nullptr;
+        Window* gameWindow  = nullptr;
+        flick_t currentTime = flick_t{ 0 };
 
         char const* const workingDirectory;
     };

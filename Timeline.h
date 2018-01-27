@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Flick.h"
+#include "Range.h"
 
 #include <cstddef>
 #include <vector>
@@ -13,7 +14,7 @@ namespace GGJ
 
     class Timeline final
     {
-        using iterator = std::vector<keystroke_t>::const_iterator;
+        using iterator = detail::Range<std::vector<keystroke_t>::const_iterator>;
 
     public:
         Timeline() noexcept;

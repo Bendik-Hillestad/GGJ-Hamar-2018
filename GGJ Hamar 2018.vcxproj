@@ -142,6 +142,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Range.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Timeline.h" />
     <ClInclude Include="Window.h" />

@@ -21,9 +21,12 @@ namespace GGJ
 
     static Player playerBlock{ 0, 0, 32, 64, 1 };
 
-    Game* Game::InitGame(char const* workingDirectory) noexcept
+    Game* Game::GetGame(char const* workingDirectory) noexcept
     {
         static Game game{ workingDirectory };
+
+        //Check that it has not already been initialised
+        if (game.gameWindow != nullptr) return &game;
 
         //Create the window
         game.gameWindow = Window::GetWindow(800, 600);
@@ -44,31 +47,37 @@ namespace GGJ
         return &game;
     }
 
+    flick_t Game::GetWorldTime() const noexcept
+    {
+        return this->currentTime;
+    }
+
     void Game::Run() noexcept
     {
         //Start the clock
-        auto old = clock_t::now();
-        auto acc = flick_t::rep{ 0 };
+        auto old   = clock_t::now();
+        auto acc   = flick_t{ 0 };
 
         //Enter the main game loop
         do
         {
             //Grab elapsed time
             auto now = clock_t::now();
-            auto dur = now - old;
+            auto dur = std::chrono::duration_cast<flick_t>(now - old);
             old = now;
 
             //Accumulate time
-            acc += dur.count();
+            acc               += dur;
+            this->currentTime += dur;
 
             //Perform engine ticks
-            while (acc >= ENGINE_TICK.count())
+            while (acc >= ENGINE_TICK)
             {
                 //Think
                 this->Think(std::chrono::duration_cast<std::chrono::duration<float>>(ENGINE_TICK).count());
 
                 //Remove from accumulator
-                acc -= ENGINE_TICK.count();
+                acc -= ENGINE_TICK;
             }
 
             //Render the frame

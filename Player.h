@@ -4,6 +4,7 @@
 
 #include "Block.h"
 #include "InputManager.h"
+#include "Timeline.h"
 
 namespace GGJ
 {
@@ -17,6 +18,8 @@ namespace GGJ
 
     private:
         bool up, left, down, right;
+
+        Timeline timeline;
     };
 };
 

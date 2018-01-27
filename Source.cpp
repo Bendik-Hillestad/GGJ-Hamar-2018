@@ -14,7 +14,7 @@ int main(int argc, char const* const argv[])
 
     //Initialise the game
     std::printf("#Initialising the game...\n");
-    auto game = GGJ::Game::InitGame(cwd);
+    auto game = GGJ::Game::GetGame(cwd);
 
     //Check that it was succesful
     if (game != nullptr)
