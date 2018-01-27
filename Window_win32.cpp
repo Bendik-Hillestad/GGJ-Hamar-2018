@@ -147,7 +147,7 @@ namespace GGJ
         if (wglSwapIntervalEXT == nullptr)                               return false;
 
         //Enable/Disable V-Sync (1 is off, 0 is on)
-        wglSwapIntervalEXT(1);
+        wglSwapIntervalEXT(0);
 
         //Bind a VAO
         GLuint vao;

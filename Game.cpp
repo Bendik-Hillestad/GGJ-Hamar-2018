@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "Window.h"
 #include "Shaders.h"
-#include "BoxMesh.h"
+#include "Quad.h"
 
 #include <cstdio>
 #include <chrono>
@@ -34,7 +34,7 @@ namespace GGJ
         BuildShaders();
 
         //Make sure the box mesh has been built
-        BoxMesh::GetBoxMesh();
+        Quad::GetQuad();
 
         //Show the window
         game.gameWindow->Show();
@@ -100,7 +100,7 @@ namespace GGJ
         GLuint program = UseProgram(GGJ::Program::Main);
 
         //Bind the box mesh
-        BoxMesh::GetBoxMesh()->Bind(program);
+        Quad::GetQuad()->Bind(program);
 
         //Set the scale
         GLuint uniformScale = glGetUniformLocation(program, "scale");

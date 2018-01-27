@@ -1,20 +1,20 @@
-#ifndef GGJ_2018_BOX_MESH_H
-#define GGJ_2018_BOX_MESH_H
+#ifndef GGJ_2018_QUAD_H
+#define GGJ_2018_QUAD_H
 #pragma once
 
 #include <GL\gl3w.h>
 
 namespace GGJ
 {
-    class BoxMesh final
+    class Quad final
     {
     public:
-        static BoxMesh* GetBoxMesh() noexcept;
+        static Quad* GetQuad() noexcept;
 
         void Bind(GLuint shaderProgram) noexcept;
 
     private:
-        BoxMesh() noexcept {};
+        Quad() noexcept {};
 
         GLuint vbo;
         GLuint ibo;

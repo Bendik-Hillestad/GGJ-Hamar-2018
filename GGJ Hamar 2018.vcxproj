@@ -119,7 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BoxMesh.cpp" />
+    <ClCompile Include="Quad.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -132,7 +132,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoxMesh.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Window.h" />

@@ -1,4 +1,4 @@
-#include "BoxMesh.h"
+#include "Quad.h"
 
 namespace GGJ
 {
@@ -16,36 +16,36 @@ namespace GGJ
         2, 1, 3
     };
 
-    BoxMesh* BoxMesh::GetBoxMesh() noexcept
+    Quad* Quad::GetQuad() noexcept
     {
-        static BoxMesh mesh{};
+        static Quad quad{};
 
         //Check if it's already initialised
-        if (mesh.initialised) return &mesh;
+        if (quad.initialised) return &quad;
 
         //Ask the driver for a buffer for our vbo
-        glGenBuffers(1, &mesh.vbo);
+        glGenBuffers(1, &quad.vbo);
 
         //Bind it
-        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, quad.vbo);
 
         //Store the data
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         //Ask the driver for a buffer for our ibo
-        glGenBuffers(1, &mesh.ibo);
+        glGenBuffers(1, &quad.ibo);
 
         //Bind it
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad.ibo);
 
         //Store the data
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-        //Return the mesh
-        return &mesh;
+        //Return the quad
+        return &quad;
     }
 
-    void BoxMesh::Bind(GLuint shaderProgram) noexcept
+    void Quad::Bind(GLuint shaderProgram) noexcept
     {
         //Bind the vertex buffer
         glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
