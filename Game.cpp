@@ -94,7 +94,7 @@ namespace GGJ
     void Game::Render() noexcept
     {
         //Clear buffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         //Use the shader we want
         GLuint program = UseProgram(GGJ::Program::Main);
