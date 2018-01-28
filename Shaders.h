@@ -9,7 +9,10 @@ namespace GGJ
     enum Program
     {
         Main,
-        Light
+        Occluder,
+        Shadow,
+        Light,
+        Post
     };
 
     bool   BuildShaders()                noexcept;
