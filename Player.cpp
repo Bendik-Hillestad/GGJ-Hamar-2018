@@ -5,16 +5,16 @@
 
 namespace GGJ
 {
-    static constexpr float PLAYER_ACC       = 5000;
-    static constexpr float PLAYER_MAX_SPEED =  500;
+    static constexpr float PLAYER_ACC       = 4000;
+    static constexpr float PLAYER_MAX_SPEED =  400;
 
     Player::Player(int x, int y, int width, int height, float invMass) noexcept : Block{x, y, width, height, invMass},
         up{ false }, left{ false }, down{ false }, right{ false }, timeline{} {}
 
     void Player::Think(float dt) noexcept
     {
-        this->xvel *= (1.0f - 2.0f * dt);
-        this->yvel *= (1.0f - 2.0f * dt);
+        this->xvel *= (1.0f - 4.0f * dt);
+        this->yvel *= (1.0f - 4.0f * dt);
 
         if (this->up)    this->AddAccel(            0.0f,  PLAYER_ACC * dt);
         if (this->left)  this->AddAccel(-PLAYER_ACC * dt,             0.0f);
