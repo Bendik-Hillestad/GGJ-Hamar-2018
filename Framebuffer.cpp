@@ -21,8 +21,8 @@ namespace GGJ
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
 
         //Clamp UV coordinates between 0 and 1
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         //Initialise the texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -50,9 +50,24 @@ namespace GGJ
         return buffer;
     }
 
-    void Framebuffer::Bind(GLuint offset) noexcept
+    void Framebuffer::Bind(GLuint uniformLoc) noexcept
     {
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + offset, this->texture, 0);
+        glUniform1i(uniformLoc, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->texture);
+    }
+
+    void Framebuffer::Clear(GLfloat r, GLfloat g, GLfloat b, GLfloat a) noexcept
+    {
+        //Bind framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+
+        //Clear buffer with provided colour
+        glClearColor(r, g, b, a);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        //Unbind framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void Framebuffer::Dispose() noexcept

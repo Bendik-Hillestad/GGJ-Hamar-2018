@@ -6,19 +6,24 @@
 
 namespace GGJ
 {
+    class Game;
+
     class Framebuffer final
     {
     public:
-        static Framebuffer CreateBuffer(GLuint width, GLuint height, GLint magFilter = GL_NEAREST, GLint minFilter = GL_NEAREST) noexcept;
-        
-        void        Bind        (GLuint offset) noexcept;
-        void        Dispose     ()              noexcept;
+        Framebuffer() noexcept;
 
-        GLuint      GetWidth    ()              const noexcept;
-        GLuint      GetHeight   ()              const noexcept;
+        static Framebuffer CreateBuffer(GLuint width, GLuint height, GLint magFilter = GL_LINEAR, GLint minFilter = GL_LINEAR) noexcept;
+        
+        void        Bind        (GLuint uniformLoc)                          noexcept;
+        void        Clear       (GLfloat r, GLfloat g, GLfloat b, GLfloat a) noexcept;
+        void        Dispose     ()                                           noexcept;
+
+        GLuint      GetWidth    ()                                     const noexcept;
+        GLuint      GetHeight   ()                                     const noexcept;
 
     private:
-        Framebuffer() noexcept;
+        friend class Game;
 
         GLuint texture;
         GLuint fbo;
