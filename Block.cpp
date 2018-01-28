@@ -18,6 +18,12 @@ namespace GGJ
         width{ width }, height{ height },
         invMass{ invMass } {}
 
+    void Block::SetPosition(float x, float y) noexcept
+    {
+        this->x = x;
+        this->y = y;
+    }
+
     void Block::AddAccel(float xacc, float yacc) noexcept
     {
         //Add acceleration to velocity

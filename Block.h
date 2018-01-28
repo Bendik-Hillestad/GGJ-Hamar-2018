@@ -9,16 +9,17 @@ namespace GGJ
     class Block
     {
     public:
-        Block(int x, int y, int width, int height, float invMass) noexcept;
+        Block(int x, int y, int width, int height, float invMass)    noexcept;
 
-        void         AddAccel(float xacc, float yacc)             noexcept;
-        void         Update  (float dt)                           noexcept;
-        void         Render  (GLuint program)               const noexcept;
+        void         SetPosition(float x, float y)                   noexcept;
+        void         AddAccel   (float xacc, float yacc)             noexcept;
+        void         Update     (float dt)                           noexcept;
+        void         Render     (GLuint program)               const noexcept;
 
-        float        GetPosX ()                             const noexcept;
-        float        GetPosY ()                             const noexcept;
+        float        GetPosX    ()                             const noexcept;
+        float        GetPosY    ()                             const noexcept;
 
-        virtual void Think   (float dt)                           noexcept;
+        virtual void Think      (float dt)                           noexcept;
 
     protected:
         float x,      y;

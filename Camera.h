@@ -14,6 +14,7 @@ namespace GGJ
 
         void Move         (glm::vec2 const &newPos)  noexcept;
         void Resize       (glm::vec2 const &newSize) noexcept;
+        void Constrain    ()                         noexcept;
         
         void GetViewMatrix(glm::mat4x4* out) const noexcept;
 

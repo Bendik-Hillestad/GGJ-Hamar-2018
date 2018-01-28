@@ -11,6 +11,7 @@
 #include "Quad.h"
 #include "Player.h"
 #include "Camera.h"
+#include "Level.h"
 #include "Framebuffer.h"
 #include "Flick.h"
 
@@ -29,15 +30,6 @@ namespace GGJ
     static Camera             gameCamera{ { 0, 0 }, { 0, 0 } };
     static Player             playerBlock{ 0, 0, 32, 64, 1 };
 
-    static int                map[6][12]
-    {
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 },
-        { 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1 },
-        { 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1 },
-        { 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-    };
     static std::vector<Block> gameScene{};
 
     static Framebuffer*       occluderMap = nullptr;
@@ -63,13 +55,7 @@ namespace GGJ
         gameCamera.Resize(glm::vec2{ game.gameWindow->GetWidth(), game.gameWindow->GetHeight() });
 
         //Setup game world
-        for (int y = 0; y < 6; y++)
-        {
-            for (int x = 0; x < 12; x++)
-            {
-                if (map[y][x] == 1) gameScene.push_back(Block{ x * 128, y * 128, 128, 128, 0 });
-            }
-        }
+        GGJ::LoadLevel(&playerBlock, &gameScene);
 
         //Build shaders
         BuildShaders();
@@ -147,6 +133,9 @@ namespace GGJ
 
         //Update camera
         gameCamera.Move(glm::vec2{ playerBlock.GetPosX(), playerBlock.GetPosY() });
+
+        //Make sure it nevers gets outside
+        gameCamera.Constrain();
     }
 
     void Game::Render() noexcept

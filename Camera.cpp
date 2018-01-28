@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Level.h"
 
 #include <glm\gtc\matrix_transform.hpp>
 
@@ -18,6 +19,14 @@ namespace GGJ
     void Camera::Resize(glm::vec2 const &newSize) noexcept
     {
         this->size = newSize;
+    }
+
+    void Camera::Constrain() noexcept
+    {
+        if (this->pos.x - this->size.x / 2.0f < 0.0f)              this->pos.x = this->size.x / 2.0f;
+        if (this->pos.x + this->size.x / 2.0f > GetLevelWidth())   this->pos.x = GetLevelWidth() - this->size.x / 2.0f;
+        if (this->pos.y + this->size.y / 2.0f > 0.0f)              this->pos.y = -this->size.y / 2.0f;
+        if (this->pos.y - this->size.y / 2.0f < -GetLevelHeight()) this->pos.y = -GetLevelHeight() + this->size.y / 2.0f;
     }
 
     void Camera::GetViewMatrix(glm::mat4x4* out) const noexcept
