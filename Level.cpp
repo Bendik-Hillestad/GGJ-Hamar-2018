@@ -2,14 +2,19 @@
 
 namespace GGJ
 {
-    static constexpr int level[6][12]
+    static constexpr int level[11][12]
     {
         { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
         { 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 },
         { 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1 },
         { 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1 },
         { 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1 },
+        { 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1 },
+        { 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1 },
+        { 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 },
+        { 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 },
     };
 
     int GetLevelWidth() noexcept
@@ -19,12 +24,12 @@ namespace GGJ
 
     int GetLevelHeight() noexcept
     {
-        return 6 * 128;
+        return 11 * 128;
     }
 
     void LoadLevel(Player* outPlayer, std::vector<Block>* outMap) noexcept
     {
-        for (int y = 0; y < 6; y++)
+        for (int y = 0; y < 11; y++)
         {
             for (int x = 0; x < 12; x++)
             {
