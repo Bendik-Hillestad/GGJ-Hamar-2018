@@ -13,7 +13,10 @@ namespace GGJ
 
         void         AddAccel(float xacc, float yacc)             noexcept;
         void         Update  (float dt)                           noexcept;
-        void         Render  (GLuint program)                     noexcept;
+        void         Render  (GLuint program)               const noexcept;
+
+        float        GetPosX ()                             const noexcept;
+        float        GetPosY ()                             const noexcept;
 
         virtual void Think   (float dt)                           noexcept;
 

@@ -1,15 +1,20 @@
 #include <GL\gl3w.h>
 
+#define GLM_FORCE_RADIANS
+#include <glm\glm.hpp>
+#include <glm\gtc\type_ptr.hpp>
+
 #include "Game.h"
 #include "Window.h"
 #include "InputManager.h"
 #include "Shaders.h"
 #include "Quad.h"
 #include "Player.h"
+#include "Camera.h"
+#include "Framebuffer.h"
 #include "Flick.h"
 
 #include <cstdio>
-
 
 namespace GGJ
 {
@@ -19,7 +24,17 @@ namespace GGJ
         std::chrono::duration_cast<flick_t>(std::chrono::duration<flick_t::rep, std::ratio<1, 60>>{1})
     };
 
-    static Player playerBlock{ 0, 0, 32, 64, 1 };
+    /* BAD GLOBAL VARIABLES ETC ETC, DON'T LOOK */
+    
+    static Camera             gameCamera{ { 0, 0 }, { 0, 0 } };
+    static Player             playerBlock{ 0, 0, 32, 64, 1 };
+    static std::vector<Block> gameScene{};
+
+    static Framebuffer*       occluderMap = nullptr;
+    static Framebuffer*       shadowMap = nullptr;
+    static Framebuffer*       lightMap = nullptr;
+
+    /* BAD GLOBAL VARIABLES ETC ETC, DON'T LOOK */
 
     Game* Game::GetGame(char const* workingDirectory) noexcept
     {
@@ -33,6 +48,13 @@ namespace GGJ
 
         //Initialise OpenGL
         game.gameWindow->InitGL();
+
+        //Setup the camera
+        gameCamera.Resize(glm::vec2{ game.gameWindow->GetWidth(), game.gameWindow->GetHeight() });
+
+        //Setup game world
+        gameScene.push_back(Block{ 96, 0, 32, 32, 0 });
+        gameScene.push_back(Block{ 64, 0, 32, 32, 0 });
 
         //Build shaders
         BuildShaders();
@@ -107,6 +129,9 @@ namespace GGJ
 
         //Update player
         playerBlock.Update(dt);
+
+        //Update camera
+        gameCamera.Move(glm::vec2{ playerBlock.GetPosX(), playerBlock.GetPosY() });
     }
 
     void Game::Render() noexcept
@@ -120,7 +145,24 @@ namespace GGJ
         //Bind the box mesh
         Quad::GetQuad()->Bind(program);
 
+        //Get the view matrix
+        glm::mat4x4 view{ 1.0f };
+        gameCamera.GetViewMatrix(&view);
+
+        //Bind the camera matrix
+        glUniformMatrix4fv
+        (
+            glGetUniformLocation(program, "view"),
+            1, false, glm::value_ptr(view)
+        );
+
         //Render the player
         playerBlock.Render(program);
+
+        //Render game world
+        for (auto const &block : gameScene)
+        {
+            block.Render(program);
+        }
     }
 };

@@ -10,16 +10,16 @@ namespace GGJ
 
                 layout(location = 0) in vec2 vertexPosition;
 
-                uniform vec2 scale;
-                uniform vec2 pos;
+                uniform mat4 view;
+                uniform mat4 model;
 
                 out vec2 texCoord;
 
                 void main()
                 {
-	                texCoord = 0.5 + vertexPosition * vec2(0.5, -0.5);
-
-	                gl_Position	= vec4((vertexPosition * scale) + pos, 0, 1);
+                    gl_Position		= ((view*model) * vec4(vertexPosition, 0, 1));
+    
+                    texCoord 		= vertexPosition + 0.5;
                 }
             )glsl"
         },

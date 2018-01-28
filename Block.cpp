@@ -3,6 +3,13 @@
 
 #include <cmath>
 
+#define GLM_FORCE_RADIANS
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
+
+using namespace glm;
+
 namespace GGJ
 {
     Block::Block(int x, int y, int width, int height, float invMass) noexcept : 
@@ -28,26 +35,32 @@ namespace GGJ
         this->y += this->yvel * dt;
     }
 
-    void Block::Render(GLuint program) noexcept
+    void Block::Render(GLuint program) const noexcept
     {
-        //Set the scale
-        glUniform2f
-        (
-            glGetUniformLocation(program, "scale"),
-            static_cast<float>(this->width)  / Window::GetWindow()->GetWidth (),
-            static_cast<float>(this->height) / Window::GetWindow()->GetHeight()
-        );
+        //Calculate the model matrix
+        mat4x4 model{ 1.0f };
+        model = translate(model, vec3{ this->x, this->y, 1.0 });
+        model = scale    (model, vec3{ this->width, this->height, 1.0f });
 
-        //Set the position
-        glUniform2f
+        //Bind it
+        glUniformMatrix4fv
         (
-            glGetUniformLocation(program, "pos"),
-            std::floor(this->x) / Window::GetWindow()->GetWidth (),
-            std::floor(this->y) / Window::GetWindow()->GetHeight()
+            glGetUniformLocation(program, "model"),
+            1, false, value_ptr(model)
         );
 
         //Draw a quad
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    float Block::GetPosX() const noexcept
+    {
+        return this->x;
+    }
+
+    float Block::GetPosY() const noexcept
+    {
+        return this->y;
     }
 
     void Block::Think(float dt) noexcept
