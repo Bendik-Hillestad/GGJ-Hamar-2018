@@ -1,7 +1,13 @@
 #include "Rect.h"
 
+using namespace glm;
+
 namespace GGJ
 {
+    Rect::Rect(vec2 const &center, vec2 const &halfSize) noexcept
+        : center{ center }, halfSize{ halfSize }
+    {}
+
     bool Rect::Intersects(Rect const &rect) const noexcept
     {
         //Get the line from the center of one rectangle to the other
