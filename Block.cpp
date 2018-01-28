@@ -1,5 +1,6 @@
 #include "Block.h"
 #include "Window.h"
+#include "Rect.h"
 
 #include <cmath>
 
@@ -57,6 +58,13 @@ namespace GGJ
 
         //Draw a quad
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    bool Block::Intersects(Block const* other) const noexcept
+    {
+        //Create a bounding rectanlge and check
+        return Rect{ glm::vec2{this->x, this->y}, glm::vec2{ this->width / 2.0f, this->height / 2.0f} }.Intersects
+              (Rect{ glm::vec2{ other->x, other->y }, glm::vec2{ other->width / 2.0f, other->height / 2.0f } });
     }
 
     float Block::GetPosX() const noexcept

@@ -24,8 +24,9 @@ namespace GGJ
     private:
         Game(char const* workingDirectory) noexcept : workingDirectory{ workingDirectory } {};
 
-        void Think (float dt) noexcept;
-        void Render()         noexcept;
+        void Think           (float dt) noexcept;
+        void HandleCollisions()         noexcept;
+        void Render          ()         noexcept;
 
         Window* gameWindow  = nullptr;
         flick_t currentTime = flick_t{ 0 };

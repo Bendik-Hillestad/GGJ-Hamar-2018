@@ -6,6 +6,8 @@
 
 namespace GGJ
 {
+    class Game;
+
     class Block
     {
     public:
@@ -16,12 +18,16 @@ namespace GGJ
         void         Update     (float dt)                           noexcept;
         void         Render     (GLuint program)               const noexcept;
 
+        bool         Intersects (Block const* other)           const noexcept;
+
         float        GetPosX    ()                             const noexcept;
         float        GetPosY    ()                             const noexcept;
 
         virtual void Think      (float dt)                           noexcept;
 
     protected:
+        friend class Game;
+
         float x,      y;
         float xvel,   yvel;
 

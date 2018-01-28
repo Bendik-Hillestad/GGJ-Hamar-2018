@@ -2,6 +2,7 @@
 
 #define GLM_FORCE_RADIANS
 #include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
 #include "Game.h"
@@ -28,13 +29,14 @@ namespace GGJ
     /* BAD GLOBAL VARIABLES ETC ETC, DON'T LOOK */
     
     static Camera             gameCamera{ { 0, 0 }, { 0, 0 } };
+    static Camera             lightCamera{ { 0, 0 }, { 0, 0 } };
     static Player             playerBlock{ 0, 0, 32, 64, 1 };
 
     static std::vector<Block> gameScene{};
 
-    static Framebuffer*       occluderMap = nullptr;
-    static Framebuffer*       shadowMap = nullptr;
-    static Framebuffer*       lightMap = nullptr;
+    static Framebuffer        occluderMap;
+    static Framebuffer        shadowMap;
+    static Framebuffer        lightMap;
 
     /* BAD GLOBAL VARIABLES ETC ETC, DON'T LOOK */
 
@@ -46,13 +48,19 @@ namespace GGJ
         if (game.gameWindow != nullptr) return &game;
 
         //Create the window
-        game.gameWindow = Window::GetWindow(800, 600);
+        game.gameWindow = Window::GetWindow(1200, 700);
 
         //Initialise OpenGL
         game.gameWindow->InitGL();
 
-        //Setup the camera
-        gameCamera.Resize(glm::vec2{ game.gameWindow->GetWidth(), game.gameWindow->GetHeight() });
+        //Setup the cameras
+        gameCamera.Resize(glm::vec2{ game.gameWindow->GetWidth() * 1.5f, game.gameWindow->GetHeight() * 1.5f });
+        lightCamera.Resize(glm::vec2{ 800, 800 });
+
+        //Setup framebuffers
+        occluderMap = Framebuffer::CreateBuffer(512, 512);
+        shadowMap   = Framebuffer::CreateBuffer(256, 1);
+        lightMap    = Framebuffer::CreateBuffer(512, 512);
 
         //Setup game world
         GGJ::LoadLevel(&playerBlock, &gameScene);
@@ -131,42 +139,308 @@ namespace GGJ
         //Update player
         playerBlock.Update(dt);
 
-        //Update camera
-        gameCamera.Move(glm::vec2{ playerBlock.GetPosX(), playerBlock.GetPosY() });
+        //Resolve any collisions that might have occurred
+        this->HandleCollisions();
 
-        //Make sure it nevers gets outside
-        gameCamera.Constrain();
+        //Update cameras
+        gameCamera.Move(glm::vec2{ playerBlock.GetPosX(), playerBlock.GetPosY() });
+        lightCamera.Move(glm::vec2{ playerBlock.GetPosX(), playerBlock.GetPosY() });
+    }
+
+    void Game::HandleCollisions() noexcept
+    {
+        //Go through all the scene objects and test
+        for (auto const &block : gameScene)
+        {
+            //Check for intersection
+            if (playerBlock.Intersects(&block))
+            {
+                //Calculate movement required on the x axis
+                float dx = std::max(playerBlock.x - playerBlock.width / 2.0f, block.x - block.width / 2.0f) -
+                           std::min(playerBlock.x + playerBlock.width / 2.0f, block.x + block.width / 2.0f);
+
+                //Calculate movement required on the y axis
+                float dy = std::max(playerBlock.y - playerBlock.height / 2.0f, block.y - block.height / 2.0f) -
+                           std::min(playerBlock.y + playerBlock.height / 2.0f, block.y + block.height / 2.0f);
+
+                //Get the axis of least movement
+                if (dx*dx < dy*dy)
+                {
+                    //Check which direction to move the player
+                    if (playerBlock.x < block.x) playerBlock.x += dx;
+                    else                         playerBlock.x -= dx;
+
+                    playerBlock.xvel = 0;
+                }
+                else
+                {
+                    //Check which direction to move the player
+                    if (playerBlock.y < block.y) playerBlock.y += dy;
+                    else                         playerBlock.y -= dy;
+
+                    playerBlock.yvel = 0;
+                }
+            }
+        }
     }
 
     void Game::Render() noexcept
     {
-        //Clear buffer
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        //Use the shader we want
-        GLuint program = UseProgram(GGJ::Program::Main);
-
-        //Bind the box mesh
-        Quad::GetQuad()->Bind(program);
-
-        //Get the view matrix
-        glm::mat4x4 view{ 1.0f };
-        gameCamera.GetViewMatrix(&view);
-
-        //Bind the camera matrix
-        glUniformMatrix4fv
-        (
-            glGetUniformLocation(program, "view"),
-            1, false, glm::value_ptr(view)
-        );
-
-        //Render the player
-        playerBlock.Render(program);
-
-        //Render game world
-        for (auto const &block : gameScene)
+        //Render the light
         {
-            block.Render(program);
+            //Occlusion pass
+            {
+                //Get the view matrix
+                glm::mat4x4 view{ 1.0f };
+                lightCamera.GetViewMatrix(&view);
+
+                //Set blend mode
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                //Limit the viewport
+                glViewport(0, 0, occluderMap.width, occluderMap.height);
+
+                //Use the occluder shader
+                GLuint program = UseProgram(GGJ::Program::Occluder);
+                glEnableVertexAttribArray(0);
+
+                //Bind the box mesh
+                Quad::GetQuad()->Bind(program);
+
+                //Bind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, occluderMap.fbo);
+
+                //Clear buffer
+                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                //Bind the camera matrix
+                glUniformMatrix4fv
+                (
+                    glGetUniformLocation(program, "view"),
+                    1, false, glm::value_ptr(view)
+                );
+
+                //Render game world
+                for (auto const &block : gameScene)
+                {
+                    block.Render(program);
+                }
+
+                //Unbind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+            
+            //Shadow pass
+            {
+                //Setup matrices
+                glm::mat4x4 view{ 1.0f };
+                glm::mat4x4 model{ 1.0f };
+                model = glm::scale(model, glm::vec3(2.0f, -2.0f, 1.0f));
+
+                //Set blend mode
+                glBlendFunc(GL_ONE, GL_ZERO);
+
+                //Limit the viewport
+                glViewport(0, 0, shadowMap.width, 1);
+
+                //Use the shadow shader
+                GLuint program = UseProgram(GGJ::Program::Shadow);
+                glEnableVertexAttribArray(0);
+
+                //Bind the box mesh
+                Quad::GetQuad()->Bind(program);
+
+                //Bind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.fbo);
+
+                //Clear buffer
+                glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                //Bind occluder map
+                occluderMap.Bind(glGetUniformLocation(program, "occluderMap"));
+
+                //Set shadow resolution
+                glUniform2f(glGetUniformLocation(program, "shadowRes"), shadowMap.width, 64.0f);
+
+                //Bind the camera matrix
+                glUniformMatrix4fv
+                (
+                    glGetUniformLocation(program, "view"),
+                    1, false, glm::value_ptr(view)
+                );
+
+                //Bind the model matrix
+                glUniformMatrix4fv
+                (
+                    glGetUniformLocation(program, "model"),
+                    1, false, glm::value_ptr(model)
+                );
+
+                //Draw a quad
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+                //Unbind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+
+            //Light pass
+            {
+                //Get the view matrix
+                glm::mat4x4 view{ 1.0f };
+                gameCamera.GetViewMatrix(&view);
+
+                //Setup model matrix
+                glm::mat4x4 model{ 1.0f };
+                model = glm::translate(model, glm::vec3(playerBlock.x, playerBlock.y, 0.0f));
+                model = glm::scale(model, glm::vec3(800, -800, 1.0f));
+
+                //Set blend mode
+                glBlendFunc(GL_ONE, GL_ONE);
+
+                //Limit the viewport
+                glViewport(0, 0, lightMap.width, lightMap.height);
+
+                //Use the light shader
+                GLuint program = UseProgram(GGJ::Program::Light);
+                glEnableVertexAttribArray(0);
+
+                //Bind the box mesh
+                Quad::GetQuad()->Bind(program);
+
+                //Bind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, lightMap.fbo);
+
+                //Clear buffer
+                glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                //Bind shadow map
+                shadowMap.Bind(glGetUniformLocation(program, "shadowMap"));
+
+                //Set shadow resolution
+                glUniform2f(glGetUniformLocation(program, "shadowRes"), shadowMap.width, shadowMap.height);
+
+                //Set light color
+                glUniform3f
+                (
+                    glGetUniformLocation(program, "lightColor"),
+                    0.7f, 0.05f, 0.0f
+                );
+
+                //Bind the camera matrix
+                glUniformMatrix4fv
+                (
+                    glGetUniformLocation(program, "view"),
+                    1, false, glm::value_ptr(view)
+                );
+
+                //Bind the model matrix
+                glUniformMatrix4fv
+                (
+                    glGetUniformLocation(program, "model"),
+                    1, false, glm::value_ptr(model)
+                );
+
+                //Draw a quad
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+                //Unbind framebuffer
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            }
+        }
+
+        //Render the scene
+        {
+            //Get the view matrix
+            glm::mat4x4 view{ 1.0f };
+            gameCamera.GetViewMatrix(&view);
+
+            //Set blend mode
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            //Clear buffer
+            glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            //Setup the viewport
+            glViewport(0, 0, this->gameWindow->GetWidth(), this->gameWindow->GetHeight());
+
+            //Use the shader we want
+            GLuint program = UseProgram(GGJ::Program::Main);
+            glEnableVertexAttribArray(0);
+
+            //Bind the box mesh
+            Quad::GetQuad()->Bind(program);
+
+            //Bind the camera matrix
+            glUniformMatrix4fv
+            (
+                glGetUniformLocation(program, "view"),
+                1, false, glm::value_ptr(view)
+            );
+
+            //Set the color
+            glUniform3f
+            (
+                glGetUniformLocation(program, "color"),
+                1.0f, 0.0f, 0.0f
+            );
+
+            //Render the player
+            playerBlock.Render(program);
+
+            //Set the color
+            glUniform3f
+            (
+                glGetUniformLocation(program, "color"),
+                1.0f, 1.0f, 1.0f
+            );
+
+            //Render game world
+            for (auto const &block : gameScene)
+            {
+                block.Render(program);
+            }
+        }
+        
+        //Apply light
+        {
+            //Setup matrices
+            glm::mat4x4 view{ 1.0f };
+            glm::mat4x4 model{ 1.0f };
+            model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
+
+            //Set blend mode
+            glBlendFunc(GL_DST_COLOR, GL_ZERO);
+
+            //Use the shader we want
+            GLuint program = UseProgram(GGJ::Program::Post);
+            glEnableVertexAttribArray(0);
+
+            //Bind the box mesh
+            Quad::GetQuad()->Bind(program);
+
+            //Bind light map
+            lightMap.Bind(glGetUniformLocation(program, "tex"));
+
+            //Bind the camera matrix
+            glUniformMatrix4fv
+            (
+                glGetUniformLocation(program, "view"),
+                1, false, glm::value_ptr(view)
+            );
+
+            //Bind the model matrix
+            glUniformMatrix4fv
+            (
+                glGetUniformLocation(program, "model"),
+                1, false, glm::value_ptr(model)
+            );
+
+            //Draw a quad
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
     }
 };
