@@ -13,7 +13,7 @@ using namespace glm;
 namespace GGJ
 {
     Block::Block(int x, int y, int width, int height, float invMass) noexcept : 
-        x{ static_cast<float>(x) }, y{ static_cast<float>(x) },
+        x{ static_cast<float>(x) }, y{ static_cast<float>(y) },
         xvel{ 0 }, yvel{ 0 },
         width{ width }, height{ height },
         invMass{ invMass } {}
@@ -40,7 +40,7 @@ namespace GGJ
         //Calculate the model matrix
         mat4x4 model{ 1.0f };
         model = translate(model, vec3{ this->x, this->y, 1.0 });
-        model = scale    (model, vec3{ this->width, this->height, 1.0f });
+        model = scale    (model, vec3{ this->width / 2.0f, this->height / 2.0f, 1.0f });
 
         //Bind it
         glUniformMatrix4fv
