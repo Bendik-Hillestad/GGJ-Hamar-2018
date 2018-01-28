@@ -16,6 +16,23 @@ namespace GGJ
         this->xvel *= (1.0f - 4.0f * dt);
         this->yvel *= (1.0f - 4.0f * dt);
 
+        //Check if replaying
+        if (this->isReplaying)
+        {
+            static auto start = Game::GetGame()->GetWorldTime();
+            static auto old = flick_t{ 0 };
+            auto now = Game::GetGame()->GetWorldTime() - start;
+
+            //Get the range
+            for (auto key : this->timeline.GetKeystrokesInRange(old, now))
+            {
+                std::printf("Replaying keystroke %d\n", key);
+            }
+
+            //Update old
+            old = now;
+        }
+
         if (this->up)    this->AddAccel(            0.0f,  PLAYER_ACC * dt);
         if (this->left)  this->AddAccel(-PLAYER_ACC * dt,             0.0f);
         if (this->down)  this->AddAccel(            0.0f, -PLAYER_ACC * dt);
@@ -77,6 +94,17 @@ namespace GGJ
 
                 //Store it in the timeline
                 this->timeline.AddKeystroke(Game::GetGame()->GetWorldTime(), key);
+            } break;
+
+            //Z
+            case Key::Z:
+            {
+                //Check that it was pressed
+                if ((key & 0b11) == Key::Pressed)
+                {
+                    //Begin replay
+                    this->isReplaying = true;
+                }
             } break;
         }
     }

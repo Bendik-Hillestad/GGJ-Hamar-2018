@@ -44,7 +44,7 @@ namespace GGJ
 
     Timeline::iterator Timeline::GetKeystrokesInRange(flick_t begin, flick_t end) noexcept
     {
-        std::size_t idxBegin = 0;
+        std::size_t idxBegin = -1;
         std::size_t idxEnd   = 0;
 
         //Iterate until we find the beginning spot
@@ -59,6 +59,12 @@ namespace GGJ
             }
         }
 
+        //Return an empty range if we went past
+        if (idxBegin == -1) return make_range(this->keystrokes, 0, 0);
+
+        //Require that the end is at least equal to or greater than begin
+        idxEnd = idxBegin;
+
         //Iterate until we find the end spot
         for (std::size_t i = idxBegin; i < this->timestamps.size(); i++)
         {
@@ -66,7 +72,7 @@ namespace GGJ
             if (this->timestamps[i] <= end)
             {
                 //End here
-                idxEnd = i;
+                idxEnd = i + 1;
                 break;
             }
         }

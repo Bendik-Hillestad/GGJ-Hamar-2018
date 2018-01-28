@@ -19,6 +19,7 @@ namespace GGJ
     private:
         bool up, left, down, right;
 
+        bool isReplaying = false;
         Timeline timeline;
     };
 };
