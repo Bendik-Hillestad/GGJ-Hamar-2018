@@ -1,5 +1,7 @@
 #include "Timeline.h"
 
+#include <cstdio>
+
 namespace GGJ
 {
     Timeline::Timeline() noexcept
@@ -15,6 +17,8 @@ namespace GGJ
 
         //Push keystroke
         this->keystrokes.push_back(keystroke);
+
+        std::printf("%lld: %d\n", timestamp.count(), keystroke);
     }
 
     void Timeline::EraseAfter(flick_t timestamp) noexcept
