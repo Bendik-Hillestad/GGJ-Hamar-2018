@@ -57,6 +57,14 @@ namespace GGJ
 
     void Framebuffer::Dispose() noexcept
     {
+        //Check that the framebuffer is allocated
+        if (this->fbo)
+        {
+            //Release it
+            glDeleteFramebuffers(1, &this->fbo);
+            this->fbo = 0;
+        }
+
         //Check that a texture is allocated
         if (this->texture)
         {
