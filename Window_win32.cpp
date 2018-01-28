@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdio>
 #include <memory>
+#include <chrono>
+#include <string>
 
 #include <GL\gl3w.h>
 
@@ -154,8 +156,8 @@ namespace GGJ
         wglSwapIntervalEXT = reinterpret_cast<decltype(wglSwapIntervalEXT)>(wglGetProcAddress("wglSwapIntervalEXT"));
         if (wglSwapIntervalEXT == nullptr)                               return false;
 
-        //Enable/Disable V-Sync (1 is off, 0 is on)
-        wglSwapIntervalEXT(0);
+        //Enable/Disable V-Sync (1 is on, 0 is off)
+        wglSwapIntervalEXT(1);
 
         //Bind a VAO
         GLuint vao;
